@@ -1,0 +1,31 @@
+
+#
+# Deploy the ingress rule for Grafana within the Kubernetes Cluster.
+#
+
+# ------------------- HTTPS Ingress (NGINX) ------------------- #
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "nano-ingress"
+  namespace: "monitoring"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    certmanager.k8s.io/cluster-issuer: lets-encrypt
+spec:
+  tls:
+  - hosts:
+      # !CHANGE THIS! To match your real DNS name.
+    - monitor.cloudpea.co.uk
+    secretName: tls-secret
+  rules:
+          # !CHANGE THIS! To match your real DNS name.
+  - host: monitor.cloudpea.co.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kube-prometheus-grafana
+          servicePort: 80
