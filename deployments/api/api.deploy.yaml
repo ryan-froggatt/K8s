@@ -1,0 +1,74 @@
+#
+# Deploy the back end data API microservice in Kubernetes
+#
+
+# ------------------- Scaling Policy ------------------- #
+
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 90
+
+---
+
+# ------------------- Deployment ------------------- #
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: api
+  labels:
+    app: api
+    role: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+        role: api
+    spec:
+      containers:
+      - name: api-pods
+
+        # !CHANGE THIS! To your real image reference for the data-api  
+        image: aksregistry.azurecr.io/api:latest
+        ports:
+        - containerPort: 4000
+
+        command: ["node", "main.js"]
+
+        env:  
+        - name: ROOT_URL
+          value: https://admin.cloudpea.co.uk/
+        - name: PORT
+          value: "4000"
+        - name: MONGO_URL
+          value: mongodb://adminportal:12leverst@mongo-0.mongo-svc.default.svc.cluster.local:27017,mongo-1.mongo-svc.default.svc.cluster.local:27017,mongo-2.mongo-svc.default.svc.cluster.local:27017/adminportal?replicaSet=rs0&authSource=admin
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4000
+          initialDelaySeconds: 3
+          periodSeconds: 20
+
+        resources:
+          requests:
+            memory: "100M"
+            cpu: "0.25"

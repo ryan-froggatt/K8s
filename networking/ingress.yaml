@@ -1,0 +1,34 @@
+
+#
+# Deploy the ingress rules for frontend and API within the Kubernetes Cluster.
+#
+
+# ------------------- HTTPS Ingress (NGINX) ------------------- #
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "admin-ingress"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    certmanager.k8s.io/cluster-issuer: lets-encrypt
+spec:
+  tls:
+  - hosts:
+      # !CHANGE THIS! To match your real DNS name.
+    - admin.cloudpea.co.uk
+    secretName: tls-secret
+  rules:
+          # !CHANGE THIS! To match your real DNS name.
+  - host: admin.cloudpea.co.uk
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: admin-frontend-svc
+          servicePort: 80
+      - path: /api
+        backend:
+          serviceName: admin-api-svc
+          servicePort: 80

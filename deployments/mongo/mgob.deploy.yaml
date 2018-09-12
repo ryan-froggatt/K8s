@@ -1,0 +1,101 @@
+#
+# Deploy a backup agent for MongoDB as StatefulSet with volume claims
+#
+
+# ------------------- StorageClass ------------------- #
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azure-standard
+  labels:
+    kubernetes.io/cluster-service: "true"
+provisioner: kubernetes.io/azure-disk
+allowVolumeExpansion: true
+parameters:
+    storageaccounttype: Standard_LRS
+    kind: managed
+reclaimPolicy: Delete
+
+---
+
+# ------------------- Service ------------------- #
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: mgob-svc
+  namespace: default
+  labels:
+    name: mgob-svc
+spec:
+  ports:
+  - port: 8090
+    targetPort: 8090
+  clusterIP: None
+  selector:
+    app: mongo-backup
+
+---
+
+# ------------------- StatefulSet ------------------- #
+
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: mgob
+  namespace: default
+spec:
+  serviceName: "mgob-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-backup
+  template:
+    metadata:
+      labels:
+        app: mongo-backup
+    spec:
+      containers:
+      - name: mgobd
+        image: stefanprodan/mgob:edge
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8090
+          protocol: TCP
+        volumeMounts:
+        - name: mgob-storage
+          mountPath: /storage
+        - name: mgob-tmp
+          mountPath: /tmp
+        - name: mgob-tmp
+          mountPath: /data
+        - mountPath: /config/adminportal.yaml
+          name: mgob-config
+          subPath: adminportal.yaml
+      volumes:
+        - name: mgob-config
+          configMap:
+            name: mgob-config
+            items:
+              - key: adminportal.yaml
+                path: adminportal.yaml
+  volumeClaimTemplates:
+  - metadata:
+      name: mgob-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "azure-standard"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      name: mgob-tmp
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "azure-standard"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi

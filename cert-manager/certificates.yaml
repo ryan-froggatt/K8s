@@ -1,0 +1,26 @@
+#
+# Create the Certificate as a Kubenetes Secret within the Cluster.
+#
+
+
+# ------------------- Certificate ------------------- #
+
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: tls-secret
+spec:
+  secretName: tls-secret
+  dnsNames:
+  # !CHANGE THIS! To match your real DNS name.
+  - cloudpea.co.uk
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      # !CHANGE THIS! To match your real DNS name.
+      - cloudpea.co.uk
+  issuerRef:
+    name: lets-encrypt
+    kind: ClusterIssuer

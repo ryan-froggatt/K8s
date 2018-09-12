@@ -1,0 +1,277 @@
+
+#
+# Deploy the network policies for API and DB within the Kubernetes Cluster.
+#
+
+# ------------------- NetworkPolicies ------------------- #
+
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kube-hunter-network-policy
+  namespace: default
+spec:
+  podSelector: {}
+  ingress:
+  - {}
+  egress:
+    - {}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mgob-backup-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: mongo-backup
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: mongo
+    ports:
+    - protocol: TCP
+      port: 8090
+    - protocol: TCP
+      port: 27017
+  egress:
+  - to:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongo-backup-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: mongo
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: mongo-backup
+    ports:
+    - protocol: TCP
+      port: 8090
+    - protocol: TCP
+      port: 27017
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongo-backup
+    ports:
+    - protocol: TCP
+      port: 8090
+    - protocol: TCP
+      port: 27017
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-replication-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: mongo
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: mongo
+    ports:
+    - protocol: TCP
+      port: 27017
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongo
+    ports:
+    - protocol: TCP
+      port: 27017
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongo-healthcheck-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: mongo
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+       cidr: 10.0.1.1/32
+  egress:
+  - to:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-healthcheck-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: api
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  - from:
+    - ipBlock:
+       cidr: 10.0.1.1/32
+  egress:
+  - to:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-api-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: database
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: api
+    ports:
+    - protocol: TCP
+      port: 27017
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: api
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-db-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: database
+    ports:
+      - protocol: TCP
+        port: 27017
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: database
+    ports:
+      - protocol: TCP
+        port: 27017
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+    ports:
+    - protocol: TCP
+      port: 4000
+  egress:
+  - to:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+    ports:
+    - protocol: TCP
+      port: 4000
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: frontend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - ipBlock:
+       cidr: 0.0.0.0/0
+    ports:
+    - protocol: TCP
+      port: 80

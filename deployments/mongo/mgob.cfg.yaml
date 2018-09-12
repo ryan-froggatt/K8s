@@ -1,0 +1,21 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: mongo-backup
+  name: mgob-config
+  namespace: default
+data:
+  adminportal.yaml: |
+    target:
+      host: "mongo-0.mongo-svc.default.svc.cluster.local,mongo-1.mongo-svc.default.svc.cluster.local,mongo-2.mongo-svc.default.svc.cluster.local"
+      port: 27017
+      database: "adminportal"
+    scheduler:
+      cron: "0 */4 * * *"
+      retention: 7
+      timeout: 60
+    azure:
+      containerName: "mongodb-backup"
+      connectionString: "DefaultEndpointsProtocol=https;AccountName=onehrmongobackup;AccountKey=H+edAMyMkmc8yY9dWKtOPXZ2u1A/A+QJxSYWGRmJRur8sDHi1ktHHGfYy/euLrd89qSlbH9yOo3TOVhj1bD21A==;EndpointSuffix=core.windows.net"
