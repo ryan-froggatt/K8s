@@ -173,7 +173,6 @@ spec:
       role: database
   policyTypes:
   - Ingress
-  - Egress
   ingress:
   - from:
     - podSelector:
@@ -182,11 +181,6 @@ spec:
     ports:
     - protocol: TCP
       port: 27017
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          role: api
 
 ---
 
@@ -200,16 +194,7 @@ spec:
     matchLabels:
       role: api
   policyTypes:
-  - Ingress
   - Egress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          role: database
-    ports:
-      - protocol: TCP
-        port: 27017
   egress:
   - to:
     - podSelector:
