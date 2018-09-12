@@ -11,14 +11,14 @@ metadata:
     name: cluster-autoscaler-azure
     namespace: kube-system
 data:
-    ClientID: MjY3NDAwZjYtYzQzOS00MTcxLTk2YWMtYmU0YmMwODAwZDc2Cg==
-    ClientSecret: OTAwZWI2ZmQtOWJkNC00MzdkLThmYWQtYmM0NzUwMjUwZGVhCg==
-    ResourceGroup: T25lSFItQUtTCg==
-    SubscriptionID: OWMxNWRkZTQtZjRmYS00ZGUyLTg2NTUtOGI4MTQyMWZkNjI4Cg==
-    TenantID: MjA3YzFjNGUtNTJkMy00ZWIyLTk2MjUtYWRjZDM5NjhiMDI5Cg==
-    VMType: QUtTCg==
-    ClusterName: T25lSFItQUtTLUNsdXN0ZXIK
-    NodeResourceGroup: TUNfT25lSFItQUtTX09uZUhSLUFLUy1DbHVzdGVyX3dlc3RldXJvcGUK
+    ClientID: ""
+    ClientSecret: ""
+    ResourceGroup: ""
+    SubscriptionID: ""
+    TenantID: ""
+    VMType: ""
+    ClusterName: ""
+    NodeResourceGroup: ""
 ---
   
 # ------------------- ServiceAccount ------------------- #

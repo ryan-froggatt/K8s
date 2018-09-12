@@ -53,9 +53,6 @@ spec:
         image: aksregistry.azurecr.io/frontend:latest
         ports:
         - containerPort: 80
-
-        command: ["/bin/sh", "main.sh"]
-
         env:       
         - name: API_URL
           value: admin.cloudpea.co.uk/api

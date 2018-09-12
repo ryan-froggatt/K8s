@@ -7,15 +7,18 @@ metadata:
   name: mgob-config
   namespace: default
 data:
-  adminportal.yaml: |
+  database1.yaml: |
     target:
       host: "mongo-0.mongo-svc.default.svc.cluster.local,mongo-1.mongo-svc.default.svc.cluster.local,mongo-2.mongo-svc.default.svc.cluster.local"
       port: 27017
-      database: "adminportal"
+      # !CHANGE THIS! To your databse name you wish to backup
+      database: "<Change_Me>"
     scheduler:
-      cron: "0 */4 * * *"
+      cron: "0 0 * * *"
       retention: 7
       timeout: 60
     azure:
-      containerName: "mongodb-backup"
-      connectionString: "DefaultEndpointsProtocol=https;AccountName=onehrmongobackup;AccountKey=H+edAMyMkmc8yY9dWKtOPXZ2u1A/A+QJxSYWGRmJRur8sDHi1ktHHGfYy/euLrd89qSlbH9yOo3TOVhj1bD21A==;EndpointSuffix=core.windows.net"
+      # !CHANGE THIS! To your real container name within the storage account
+      containerName: "<Change_Me>"
+      # !CHANGE THIS! To your real connection string for the storage account 
+      connectionString: "<Change_Me>"

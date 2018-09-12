@@ -59,7 +59,7 @@ spec:
         - name: PORT
           value: "4000"
         - name: MONGO_URL
-          value: mongodb://adminportal:12leverst@mongo-0.mongo-svc.default.svc.cluster.local:27017,mongo-1.mongo-svc.default.svc.cluster.local:27017,mongo-2.mongo-svc.default.svc.cluster.local:27017/adminportal?replicaSet=rs0&authSource=admin
+          value: mongodb://<dbuser>:<password>@mongo-0.mongo-svc.default.svc.cluster.local:27017,mongo-1.mongo-svc.default.svc.cluster.local:27017,mongo-2.mongo-svc.default.svc.cluster.local:27017/<database>?replicaSet=rs0&authSource=admin
 
         livenessProbe:
           httpGet:

@@ -1,0 +1,133 @@
+
+
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: alertmanager-web
+spec:
+  ingress:
+  - from:
+    ports:
+    - port: 9093
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      alertmanager: main
+      app: alertmanager
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: alertmanager-mesh
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - alertmanager
+        - key: alertmanager
+          operator: In
+          values:
+          - main
+    ports:
+    - port: 6783
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      alertmanager: main
+      app: alertmanager
+  
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: grafana
+spec:
+  ingress:
+  - ports:
+    - port: 3000
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      app: grafana
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: kube-state-metrics
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - prometheus
+        - key: prometheus
+          operator: In
+          values:
+          - k8s
+    ports:
+    - port: 8080
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      app: kube-state-metrics
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: node-exporter
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - prometheus
+        - key: prometheus
+          operator: In
+          values:
+          - k8s
+    ports:
+    - port: 9100
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      app: node-exporter
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: monitoring
+  name: prometheus
+spec:
+  ingress:
+  - ports:
+    - port: 9090
+      protocol: tcp
+  podSelector:
+    matchLabels:
+      app: prometheus
+      prometheus: k8s

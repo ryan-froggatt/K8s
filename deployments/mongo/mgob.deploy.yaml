@@ -70,16 +70,18 @@ spec:
           mountPath: /tmp
         - name: mgob-tmp
           mountPath: /data
-        - mountPath: /config/adminportal.yaml
+          # !CHANGE THIS! To reflect your mgob configmap
+        - mountPath: /config/database1.yaml
           name: mgob-config
-          subPath: adminportal.yaml
+          subPath: database1.yaml
       volumes:
         - name: mgob-config
           configMap:
             name: mgob-config
+            # !CHANGE THIS! To reflect your mgob configmap
             items:
-              - key: adminportal.yaml
-                path: adminportal.yaml
+              - key: database1.yaml
+                path: database1.yaml
   volumeClaimTemplates:
   - metadata:
       name: mgob-storage
