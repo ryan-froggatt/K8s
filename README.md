@@ -33,7 +33,7 @@ Notes on Kubernetes deployment:
 - Kubernetes version 1.9+ is assumed, if you are using 1.8 or older the API version in the deployment YAML may require changing e.g. to `apiVersion: apps/v1beta1`. Older versions have not been tested.
 
 
-## Deployment 1 - Helm Install (Easiest)
+## Deployment 1 - Helm Install
 [Helm](https://helm.sh/) is a package manager for Kubernetes, and a Helm Chart has been created to deploy a number of resources. This means you can deploy Applications with a single command.
 
 Step 1 - Install the Helm binary following the instructions at - https://github.com/helm/helm  
