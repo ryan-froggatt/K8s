@@ -30,53 +30,51 @@ Notes on Kubernetes deployment:
 
 
 ## Deployment 1 - AKS ARM Deployment
-[ARM Templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates-cloud-consistency) are a JSON files which describe resource deployments allowing them to be consistent and repeatable across environments.
+[ARM Templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates-cloud-consistency) are JSON files which describe resource deployments allowing them to be consistent and repeatable across environments.
 
-Step 1 - Edit the parameters file [AKS.parameters.json](https://github.com/ryan-froggatt/K8s/blob/master/arm/AKS.parameters.json)
-Step 2 - Run the arm deployment script [AKS.deploy.json](https://github.com/ryan-froggatt/K8s/blob/master/arm/AKS.deploy.json) to deploy the resources and resource group if required.
+Step 1 - Edit the parameters file [AKS.parameters.json](https://github.com/ryan-froggatt/K8s/blob/master/arm/AKS.parameters.json)  Step 2 - Run the arm deployment script [AKS.deploy.json](https://github.com/ryan-froggatt/K8s/blob/master/arm/AKS.deploy.json) to deploy the resources and resource group if required.
 
 
 ## Deployment 2 - Helm Install (Easiest)
 [Helm](https://helm.sh/) is a package manager for Kubernetes, and a Helm Chart has been created to deploy a number of resources. This means you can deploy Applications with a single command.
 
-Step 1 - Install the Helm binary following the instructions at - https://github.com/helm/helm
-
+Step 1 - Install the Helm binary following the instructions at - https://github.com/helm/helm  <br/>
 Step 2 - Run the [configure-helm.sh](https://github.com/ryan-froggatt/K8s/blob/master/helm/configure-helm.sh) script to initialise helm with a Kubernetes Service Account and add required helm repos.
 
 
 ## Deployment 3 - Create Dashboard Account
 [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) prevents the default AKS Dashboard account from accessing Kubernetes resources therefore a new service account should be created to view the Kubernetes Dashboard.
 
-Step 1 - Run the script [create-dashboord-account.sh](https://github.com/ryan-froggatt/K8s/blob/master/rbac/create-dashboard-account.sh)
-Step 2 - Run the command - kubectl proxy
+Step 1 - Run the script [create-dashboord-account.sh](https://github.com/ryan-froggatt/K8s/blob/master/rbac/create-dashboard-account.sh)  <br/>
+Step 2 - Run the command - kubectl proxy  <br/>
 Step 3 - Access the dashboard at - http://localhost:8001/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/login
 
 
 ## Deployment 4 - Deploy Certificate Manager
 [CertManager](https://github.com/jetstack/cert-manager) is used to automatically provision and renew TLS certificates in your Kubenretes Cluster with LetsEncrypt.
 
-Step 1 - Update the [cluster-issuer.yaml](https://github.com/ryan-froggatt/K8s/blob/master/cert-manager/cluster-issuer.yaml) & [certificates.yaml](https://github.com/ryan-froggatt/K8s/blob/master/cert-manager/certificates.yaml) files.
-Step 2 - Run command - kubectl apply -f cluster-issuer.yaml
+Step 1 - Update the [cluster-issuer.yaml](https://github.com/ryan-froggatt/K8s/blob/master/cert-manager/cluster-issuer.yaml) & [certificates.yaml](https://github.com/ryan-froggatt/K8s/blob/master/cert-manager/certificates.yaml) files.  <br/>
+Step 2 - Run command - kubectl apply -f cluster-issuer.yaml  <br/>
 Step 3 - Run command - kubectl apply -f certificates.yaml
 
 
 ## Deployment 5 - Deploy Kube-Router & Network Policies
 [Kube-Router](https://github.com/cloudnativelabs/kube-router) has a number of useful feartures within Kubernetes Networking, the primary reason for using Kube-Router is this project is the Network Policy Controller to enforce Network Security via Policies.
 
-Step 1 - Run command - kubectl apply -f kube-router.deploy.yaml
+Step 1 - Run command - kubectl apply -f kube-router.deploy.yaml  <br/>
 Step 2 - Run command - kubectl apply -f network-policies.yaml
 
 
 ## Deployment 6 - Deploy Cluster-Autoscaler
 [Cluster-Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) is used to dynamically scale Kubernetes Worker Nodes based on resource consumption and pod resource allocation.
 
-Step 1 - Run the [create-autoscaler-secret.sh](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/create-autoscaler-secret.sh) script and copy the output.
-Step 2 - Paste the output in to the Secret section within [aks-cluster-autoscaler.yaml](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/aks-cluster-autoscaler.yaml])
-Step 3 - Update the below section of [aks-cluster-autoscaler.yaml](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/aks-cluster-autoscaler.yaml]):
-Syntax:-
---nodes=min_nodes:max_nodes:node_pool_name
-Example:-
---nodes=3:10:agentpool
+Step 1 - Run the [create-autoscaler-secret.sh](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/create-autoscaler-secret.sh) script and copy the output.  <br/>
+Step 2 - Paste the output in to the Secret section within [aks-cluster-autoscaler.yaml](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/aks-cluster-autoscaler.yaml])  <br/>
+Step 3 - Update the below section of [aks-cluster-autoscaler.yaml](https://github.com/ryan-froggatt/K8s/blob/master/autoscaler/aks-cluster-autoscaler.yaml]):  <br/>
+Syntax:-  <br/>
+--nodes=min_nodes:max_nodes:node_pool_name  <br/>
+Example:-  <br/>
+--nodes=3:10:agentpool  <br/>
 
 Step 4 - Run the command - kubectl apply -f aks-cluster-autoscaler.yaml
 
@@ -88,7 +86,7 @@ Step 1  - Run command - helm install stable/nginx-ingress --name my-nginx --set 
 
 [Internal-Ingress](https://docs.microsoft.com/en-us/azure/aks/internal-lb) is used to route traffic from within the Azure vNet via an Internal Azure Load Balancer to the relevant Kubernetes Microservices running inside the Cluster.
 
-Step 1 - Add the AKS Service Principal to the AKS Subnet with the Network Contributor role.
+Step 1 - Add the AKS Service Principal to the AKS Subnet with the Network Contributor role.  <br/>
 Step 2 - Run command - helm install stable/nginx-ingress --namespace kube-system -f internal-loadbalancer.yaml
 
 
@@ -100,17 +98,17 @@ Step 1 - Run command - kubectl apply -f mongodb.all.yaml
 
 [MongoDB Backup](https://github.com/stefanprodan/mgob) deploys a Kubernetes Pod which takes MongoDB Backups and uploads to an Azure Storage Account.
 
-Step 1 - Update the [mgob.cfg.yaml](https://github.com/ryan-froggatt/K8s/blob/master/deployments/mongo/mgob.cfg.yaml) & [mgob.deploy.yaml](https://github.com/ryan-froggatt/K8s/blob/master/deployments/mongo/mgob.deploy.yaml) files with the correct Storage Account and Database information.
-Step 2 - Run the command - kubectl apply -f mgob.cfg.yaml
+Step 1 - Update the [mgob.cfg.yaml](https://github.com/ryan-froggatt/K8s/blob/master/deployments/mongo/mgob.cfg.yaml) & [mgob.deploy.yaml](https://github.com/ryan-froggatt/K8s/blob/master/deployments/mongo/mgob.deploy.yaml) files with the correct Storage Account and Database information.  <br/>
+Step 2 - Run the command - kubectl apply -f mgob.cfg.yaml  <br/>
 Step 3 - Run the command - kubectl apply -f mgob.deploy.yaml
 
 
 ## Deployment 10 - Deploy Frontend/API Applications
 This Kubernetes Project utilises a docker containers for a web frontend and api that communicates with the backend MongoDB ReplicaSet. The deployments consist of a Kubernetes Service, Scaling Policy and Pod Deployment.
 
-Step 1 - Run the command - kubectl apply -f api.svc.yaml
-Step 2 - Run the command - kubectl apply -f frontend.svc.yaml
-Step 3 - Run the command - kubectl apply -f api.deploy.yaml
+Step 1 - Run the command - kubectl apply -f api.svc.yaml  <br/>
+Step 2 - Run the command - kubectl apply -f frontend.svc.yaml  <br/>
+Step 3 - Run the command - kubectl apply -f api.deploy.yaml  <br/>
 Step 4 - Run the command - kubectl apply -f frontend.deploy.yaml
 
 
